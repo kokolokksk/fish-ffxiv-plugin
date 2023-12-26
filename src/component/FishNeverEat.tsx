@@ -1,5 +1,7 @@
 import React from 'react';
 import './fish.css'
+import TimeTab from './time/TimeTab';
+import FishRiver from './fishriver/FishRiver';
 
 const FishNeverEat = (prop: any | undefined)  => {
     const data  = {
@@ -20,8 +22,9 @@ const FishNeverEat = (prop: any | undefined)  => {
 
     return (
             <div className='fish'>
-                <h1>列表页面</h1>
-                <ul>{listItems}</ul>
+                <TimeTab />
+                <FishRiver />
+               
             </div>
     );
 };

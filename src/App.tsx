@@ -27,7 +27,7 @@ function App() {
   )
   return (
     <>
-      <FishNeverEat data={data}  />
+      <FishNeverEat data={data} className="drag"  />
     </>
   )
 }

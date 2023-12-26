@@ -1,0 +1,38 @@
+.square{
+    background-color: #ffffff;
+    opacity: 0.2;
+    border-radius: 0%;
+    border: 1px solid #66ccff;
+    height: 50px;
+    width: 50px;
+    font-size: 5PX;
+}
+.long-line {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 2px; /* 竖线的宽度 */
+  height: 110%; /* 比父级容器高度略高 */
+  background-color: red; /* 竖线的颜色 */
+  animation: moveRight 3s linear infinite; /* 设置动画效果，从左向右移动，持续时间为3秒，线性运动，无限循环 */
+  }
+
+  .fishtable{
+    overflow: hidden; /* 隐藏超出父级容器的部分 */
+    position: relative;
+  }
+  .time-tick {
+    position: absolute;
+    top: 0; /* 调整时间刻度的垂直位置 */
+    left: 50%; /* 将时间刻度放置在容器水平中间 */
+    transform: translateX(-50%); /* 将元素水平居中 */
+    width: 2px; /* 时间刻度的宽度 */
+    height: 20px; /* 时间刻度的高度 */
+    background-color: #333; /* 时间刻度的颜色 */
+  }
+  @keyframes moveRight {
+     
+    100% {
+      left: 100%; /* 移动到右侧 */
+    }
+  }
