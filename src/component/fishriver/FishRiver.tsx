@@ -75,7 +75,6 @@ const FishRiver = () => {
 };
 
 function Square({ value, onSquareClick, weather }) {
-function Square({ value, onSquareClick, weather }) {
   return (
     <button className="square" onClick={onSquareClick}>
       {weather}
