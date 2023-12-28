@@ -8,6 +8,7 @@ function App() {
   const callOverlayHandlers = async ()  =>{
     const language = await callOverlayHandler({ call: 'getLanguage' });
     const otherPlugin = await callOverlayHandler({ call: 'templateSampleFunction' });
+    OverlayPluginApi.setAcceptFocus(true);
     console.log(language.language, language.languageId);
     console.log(otherPlugin);
     // 添加数据处理

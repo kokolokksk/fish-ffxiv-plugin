@@ -5,31 +5,61 @@ import { getChineseWeather } from "../utils";
 import {getData} from "../../data/patch/fish";
 import {place} from "../../data/locale/placeNames";
 import {itemName} from "../../data/locale/item";
+import * as  fishKnowledge  from "../../data/patch/fishKnowledge";
 
 const FishRiver = () => {
   const [animationDuration, setAnimationDuration] = useState<number>(5); // 初始化动画持续时间为5秒
   const [initialPosition, setInitialPosition] = useState<number>(4.7); // 初始化位置为0% 
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredFish, setFilteredFish] = useState([]);
+  const [plannedFish, setPlannedFish] = useState(Object); // [
   let fishes = Object;
   fishes = getData();
-  const firstTenFish = Object.values(fishes).slice(0, 10);
-  console.info(fishes);
+  const firstTenFish = Object.values(fishes).slice(0, 1);
+  // console.info(fishes);
   const times = ["0", "1", "2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23"] 
   useEffect(() => {
+    
+    setPlannedFish(firstTenFish)
     const newDuration = 0;
     setAnimationDuration(newDuration);
     const timer = setInterval(() => {
       const newInitialPosition = calculateNewPosition();
-      console.info(newInitialPosition);
+      // console.info(newInitialPosition);
       setInitialPosition(newInitialPosition); 
       setInitialPosition(newInitialPosition); 
     }, 1000);
     return () => clearInterval(timer);
   }, []);
 
-  const handleClick = (i: number) => {
-    console.info(i);
+  const handleSearchChange = (event) => {
+    const term = event.target.value;
+    setSearchTerm(term);
+    // Step 3: Update fish data based on search term
+    if(term===''){
+      setFilteredFish([]);
+      return;
+    }
+    const filtered = Object.entries(fishes).filter(([key, fish]) =>
+      getChineseFishName(fish).toLowerCase().includes(term.toLowerCase())
+    );
+    if(filtered.length>5){
+      const temp = filtered.slice(0, 5);
+      setFilteredFish(temp);
+    }else{
+      setFilteredFish(filtered);
+    }
+    
   };
 
+  const handleClick = (i: number) => {
+    //console.info(i);
+  };
+  const displayFishInfo = (fish: any) => {
+      console.info(fish);
+      console.info(getChineseFishName(fish));
+      console.info(fish.locations);
+  };
   // const calculateNewDuration = (): number => {
   //   const timeLength = 70*3600;
     
@@ -37,14 +67,38 @@ const FishRiver = () => {
   // };
   const calculateNewPosition = (): number => {
     const hm = getEorzeaTime();
-    console.info(hm);
+    // console.info(hm);
     const initialPosition = Number(hm[0])*4+Number(hm[1])/15;
     return initialPosition+4;
   }
 
+  const addFish = (fish: any) => {
+    // console.info(fish);
+    const temp = plannedFish;
+    temp.push(fish);
+    setPlannedFish(temp);
+  }
 
   return (
     <>
+    <div>
+      <div>
+          <input
+              type="text"
+              placeholder="Search fish..."
+              value={searchTerm}
+              onChange={handleSearchChange}
+            />
+            <div className="searchedArea">
+              {filteredFish.map(([key, fish]) => (
+                <div className="searchedFish" key={key} onClick={() => addFish(fish)}>
+                  <div className="fishName">{getChineseFishName(fish)}</div>
+                  </div>
+                  ))}
+            </div>
+              
+        </div>
+     </div>
       <div className="fishtable">
         <div className="time-tick"></div> {/* 时间刻度元素 */}
         {/* {fishes.map((item, index) => (
@@ -56,11 +110,11 @@ const FishRiver = () => {
           </div>
         ))} */}
          
-          {Object.entries(firstTenFish).map(([key, fish]) => (
-            <div className="board-row" key={key}>
-              <Square value={getChineseFishName(fish)} onSquareClick={() => handleClick(0)} weather={getChineseFishName(fish)} />
+          {Object.entries(plannedFish).map(([key, fish]) => (
+            <div className="board-row balance" key={key}>
+              <Square value={getChineseFishName(fish)} onSquareClick={() => displayFishInfo(fish)} weather={getChineseFishName(fish)} fish={null} />
               {times.map((itemx, indexx) => (
-                <Square value={itemx} onSquareClick={() => handleClick(indexx)} weather={getEzHoursWeather(itemx, fish.locations)} />
+                <Square value={itemx} onSquareClick={() => handleClick(indexx)} weather={getEzHoursWeather(itemx, fish.locations)} fish={fish}  />
               ))}
             </div>
           ))}
@@ -74,9 +128,23 @@ const FishRiver = () => {
   );
 };
 
-function Square({ value, onSquareClick, weather }) {
+function Square({ value, onSquareClick, weather, fish }) {
+  const [timeOn, setTimeOn] = useState(false);
+  //console.info(value)
+ 
+  useEffect(() => {
+    if(fish){
+      const start = fishKnowledge.default[fish._id]['startHour'];
+      const end = fishKnowledge.default[fish._id]['endHour'];
+      if(start<=value && value <end){
+        setTimeOn(true);
+        console.info(`${value} in [${start},${end})`)
+      } 
+    }
+   
+  }, []);
   return (
-    <button className="square" onClick={onSquareClick}>
+    <button className={`square ${timeOn ? 'onTime' : 'notOnTime'}`} onClick={onSquareClick} >
       {weather}
     </button>
   );
@@ -95,14 +163,14 @@ type Place = {
 function getChineseFishName(fish){
   let name = "未知";
   if(fish._id in itemName){
-    console.info(itemName[fish._id]);
+    // console.info(itemName[fish._id]);
     name = itemName[fish._id]['chs'];
   }
   return name;
 }
 function getEzHoursWeather(ezHours:string, locations:number[]){ 
-  console.info(ezHours);
-  console.info(locations);
+  // console.info(ezHours);
+  // console.info(locations);
   const E_TIME = 20.5714285714; // ET相对于LT的倍数 
   const NOW_TIME = new Date().getTime(); // 取当前时间戳
   const FLOOR_TIME = new Date().setTime(Math.floor(NOW_TIME * E_TIME));//创建新的时间对象
@@ -115,12 +183,12 @@ function getEzHoursWeather(ezHours:string, locations:number[]){
   eorzeaTime = new Date(eorzeaTime.getTime() + (8 * 3600000));
   // 反向计算真实时间 
   const LT_TIME = eorzeaTime.getTime() / E_TIME; // 艾欧泽亚时间转换为本地时间
-  console.info(LT_TIME);
+  // console.info(LT_TIME);
   const realTime = new Date(LT_TIME); // 真实时间对象
   realTime.setHours(realTime.getHours()); // 时区转换
-  console.info(eorzeaTime);
+  // console.info(eorzeaTime);
 
-  console.info(realTime);
+  // console.info(realTime);
  
   let pl:Place = {
     name_chs: '',
@@ -128,11 +196,11 @@ function getEzHoursWeather(ezHours:string, locations:number[]){
     name_ja: '',
   };
   for(const l in locations){
-    console.info(place)
+    // console.info(place)
     const v = locations[l];
     if(v in place){
       pl = place[v]
-      console.info(pl)
+      // console.info(pl)
       break
     }
   }

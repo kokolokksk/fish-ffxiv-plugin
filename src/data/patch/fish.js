@@ -543,7 +543,7 @@ const fishGameDataCN = {
     dataMissing: true,
     anglerFishId: 180,
     bait: 4904,
-    locations: [74],
+    locations: [42],
     patch: 2,
     folklore: null,
     collectable: false,

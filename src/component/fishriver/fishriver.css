@@ -1,11 +1,23 @@
 .square{
-    background-color: #ffffff;
-    opacity: 0.6;
     border-radius: 0%;
     border: 1px solid #66ccff;
     height: 50px;
     width: 50px;
-    font-size: 5PX;
+    font-size: 5px;
+    font-weight: bold;
+}
+.balance{
+  
+  display: flex;
+
+}
+.onTime{
+  background-color: #bc6447;
+  /* opacity: 0.6; */
+}
+.notOnTime{
+  background-color: #ffffff;
+  /* opacity: 0.6; */
 }
 .long-line {
   position: absolute;
@@ -35,4 +47,10 @@
     100% {
       left: 100%; /* 移动到右侧 */
     }
+  }
+
+  .fishName{
+    font-size: 10px;
+    color: #000000;
+    font-weight: bold;
   }
