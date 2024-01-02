@@ -11,7 +11,7 @@ const TimeTab = () => {
     }, []);
     return (  
         <>
-            <div> 本地时间:{time.toLocaleTimeString()}
+            <div style={{fontSize:'17px'}}> 本地时间:{time.toLocaleTimeString()}&nbsp;&nbsp;&nbsp;&nbsp;
                    艾欧泽亚时间：{eorzeaTime}
             </div>
         </>

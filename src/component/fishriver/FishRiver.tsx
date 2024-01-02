@@ -7,6 +7,7 @@ import {place} from "../../data/locale/placeNames";
 import {itemName} from "../../data/locale/item";
 import * as  fishKnowledge  from "../../data/patch/fishKnowledge";
 import * as wetherAll from "../../data/locale/weather";
+import * as fishLocation from "../../data/patch/fishDataFull";
 import InputDemo from '../input';
 import { match } from 'pinyin-pro';
 import * as  t1  from "../../data/tip1.js";
@@ -24,6 +25,26 @@ const FishRiver = () => {
   const [statusMsg,setStatusMsg] = useState('');
   let fishes = Object;
   fishes = getData();
+
+
+  const addCNLocation = (fishes) => {
+    for(const f in fishes){
+      const fish = fishes[f]; 
+      const anglerFishId = fish.anglerFishId;
+      for(const l in fishLocation.default){
+        const location = fishLocation.default[l];
+        if(l===anglerFishId+''){
+          fish.locationsCN = location['locationsCN'];
+          if(location['fishSpotCN']){
+            fish.sportCN = location['fishSpotCN']; 
+          }
+        }
+      }
+    }
+  };
+  
+
+  addCNLocation(fishes);
   const firstTenFish = Object.values(fishes).slice(0, 1);
   // console.info(fishes);
   const times = ["0", "1", "2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23"] 
@@ -36,7 +57,7 @@ const FishRiver = () => {
     for(const f in fishGameDataCN){
       anglelist.push(fishGameDataCN[f]['anglerFishId']+'');
     }
-    console.info(anglelist);
+    // console.info(anglelist);
     setPlannedFish(firstTenFish)
     const newDuration = 0;
     setAnimationDuration(newDuration);
@@ -71,8 +92,8 @@ const FishRiver = () => {
     }
     
   };
-
-  const handleClick = (i: string,l:number[]) => {
+  
+  const handleClick = (i: string,l:string[]) => {
     //console.info(i);
     let msg = "";
     let weather = ""
@@ -112,10 +133,15 @@ const FishRiver = () => {
       }
     }
     
-    console.info(fish);
-    console.info(getChineseFishName(fish));
-    console.info(fish.locations);
+    //console.info(fish);
+    //console.info(getChineseFishName(fish));
+    //console.info(fish.locations);
     msg += getChineseFishName(fish);
+    msg += "\n  位置：";
+    for(const l in fish.sportCN){
+      msg += fish.sportCN[l];
+      msg += " ";
+    }
     setStatusMsg(msg);
   };
   // const calculateNewDuration = (): number => {
@@ -178,7 +204,7 @@ const FishRiver = () => {
             <div className="board-row balance" key={key}>
               <Square value={getChineseFishName(fish)} onSquareClick={() => displayFishInfo(fish)} weather={getChineseFishName(fish)} fish={null} />
               {times.map((itemx, indexx) => (
-                <Square value={itemx} onSquareClick={() => handleClick(itemx,fish.locations)} weather={getEzHoursWeather(itemx, fish.locations)} fish={fish} preWeather={getPreWeather(itemx,fish.locations)} />
+                <Square value={itemx} onSquareClick={() => handleClick(itemx,fish.locationsCN)} weather={getEzHoursWeather(itemx, fish.locationsCN)} fish={fish} preWeather={getPreWeather(itemx,fish.locationsCN)} />
               ))}
             </div>
           ))}
@@ -234,7 +260,7 @@ function Square({ value, onSquareClick, weather, fish, preWeather }) {
           if(rightPreWeather && rightWeather){
             setFishable(true)
           }
-          console.info(`${value} in [${start},${end})`)
+         // console.info(`${value} in [${start},${end})`)
         } 
       }
       
@@ -266,7 +292,7 @@ function getChineseFishName(fish){
   }
   return name;
 }
-function getEzHoursWeather(ezHours:string, locations:number[]){ 
+function getEzHoursWeather(ezHours:string, locations:string[]){ 
   // console.info(ezHours);
   // console.info(locations);
   const E_TIME = 20.5714285714; // ET相对于LT的倍数 
@@ -296,17 +322,19 @@ function getEzHoursWeather(ezHours:string, locations:number[]){
   for(const l in locations){
     // console.info(place)
     const v = locations[l];
-    if(v in place){
-      pl = place[v]
-      // console.info(pl)
-      break
+    for (const p in place){
+      if(place[p].name_chs===v){
+        pl = place[p]
+        // console.info(pl)
+        break
+      }  
     }
   }
   let weatherName = "未知";
-  if(pl.name_en!==''){
+  if(pl.name_chs!==''){
     const p = getTargetValue(realTime.getTime());
     const weather = getAreaPrecent();
-    const  w:WeatherEntry[] =  weather[pl.name_en];
+    const  w:WeatherEntry[] =  weather[pl.name_chs];
     if(w){
       weatherName = getRealWeather(w,p);
       weatherName = getChineseWeather(weatherName);
@@ -314,7 +342,7 @@ function getEzHoursWeather(ezHours:string, locations:number[]){
   }
   return weatherName;
 }
-function getPreWeather(ezHours:string, locations:number[]){ 
+function getPreWeather(ezHours:string, locations:string[]){ 
   // console.info(ezHours);
   // console.info(locations);
   const E_TIME = 20.5714285714; // ET相对于LT的倍数 
@@ -346,17 +374,20 @@ function getPreWeather(ezHours:string, locations:number[]){
   for(const l in locations){
     // console.info(place)
     const v = locations[l];
-    if(v in place){
-      pl = place[v]
-      // console.info(pl)
-      break
+    for (const p in place){
+      if(place[p].name_chs===v && place[p].name_chs!==''){
+        pl = place[p]
+        //console.info(pl)
+        break
+      }  
     }
   }
   let weatherName = "未知";
-  if(pl.name_en!==''){
+  //console.info(pl)
+  if(pl.name_chs!==''){
     const p = getTargetValue(realTime.getTime());
     const weather = getAreaPrecent();
-    const  w:WeatherEntry[] =  weather[pl.name_en];
+    const  w:WeatherEntry[] =  weather[pl.name_chs];
     if(w){
       weatherName = getRealWeather(w,p);
       weatherName = getChineseWeather(weatherName);

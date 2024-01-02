@@ -51,7 +51,8 @@ class InputDemo extends Component {
         return <input
             ref={this.inputRef}
             type="text"
-            style={{ width: 300, height: 30, outline: 'none',imeMode: 'inactive' }}
+            placeholder="使用首字母搜索鱼名"
+            style={{ width: 300, height: 30, outline: 'none',imeMode: 'inactive',background: 'rgb(99,99,99)' }}
             {...commonProps}
         />
     }

@@ -11,7 +11,7 @@ export default {
       name_ja: '晴れ',
     },
     3: {
-      name_chs: '阴云',
+      name_chs: '多云',
       name_en: 'Clouds',
       name_ja: '曇り',
     },

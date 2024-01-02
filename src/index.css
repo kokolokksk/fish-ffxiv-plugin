@@ -64,3 +64,14 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+input:focus {
+  box-shadow: 0 0 5px rgba(255, 255, 255, 1);
+  -webkit-box-shadow: 0 0 5px rgba(255, 255, 255, 1);;
+  -moz-box-shadow: 0 0 5px rgba(255, 255, 255, 1);;
+}
+input::placeholder {
+  color: rgb(150, 136, 114);
+}
+input {
+  color: #eee1c5;
+}

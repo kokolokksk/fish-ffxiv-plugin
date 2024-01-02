@@ -1,6 +1,5 @@
 #encoding:utf-8
 import requests
-import sqlite3
 import bs4
 import json
 import time
@@ -1291,15 +1290,28 @@ def parseAndSave(rc,i,f):
   for item in ic:
     table = item.find(class_='info_section list')
     area = table.find_all(class_='area')
+    mapDc = "fishSpotCN:["
     mapF = " locationsCN:["
     cns = ""
+    cnSpot = ""
+    spots = table.find_all('a')
+    for spot in spots:
+        href_value = spot.get('href')
+        if href_value is not None :
+            if href_value.find('spot') != -1:
+                cnSpot += ",'"+spot.text+"'"
+    cnSpot = cnSpot[1:]
     for a in area:
         print(a.text)
         cns += ",'"+a.text+"'"
     cns = cns[1:]
     mapF += cns + "],"
+    mapDc += cnSpot + "],"
     print(mapF)
-    f.write('"'+str(i)+'":{'+mapF+'},')
+    print(mapDc)
+    f.write('"'+str(i)+'":{'+mapF)
+    f.write('\n')
+    f.write(mapDc+'},')
     f.write('\n')
     
 
@@ -1327,7 +1339,7 @@ def getData(i,url,USER_AGENTS,f):
                getData(i,url,USER_AGENTS,f)
            
 #while i<=x:#x:#1132
-with open('./fishData.json','w',encoding='utf-8') as f:
+with open('./fishDataFull.json','w',encoding='utf-8') as f:
     f.write('{')
     for fish_id in fishData:
         try:
