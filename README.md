@@ -1,30 +1,35 @@
-# React + TypeScript + Vite
+# 饿了喵
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+ff14 国服act钓鱼插件
 
-Currently, two official plugins are available:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### 所在频道(拉拉肥)
 
-## Expanding the ESLint configuration
+QQ频道: 拉拉肥;
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+点击加入QQ频道【[拉拉肥](https://qun.qq.com/qqweb/qunpro/share?_wv=3&_wwv=128&appChannel=share&inviteCode=3XQuR&businessType=9&from=181074&biz=ka&shareSource=5)】
 
-- Configure the top-level `parserOptions` property like this:
+QQ群：319833969
 
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
-```
+您好，饿了喵为您服务！
+- 🐟  鱼类计划时间表
+- 👴  ···
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+# TODO
+- 自动获取没钓的鱼王
+
+## 使用技术
+使用typescript编写的vite项目。
+
+## 感谢
+使用了[ffxiv-datamining-cn](https://github.com/thewakingsands/ffxiv-datamining-cn)数据。
+
+使用了[ffxiv-ember-overlay](https://github.com/GoldenChrysus/ffxiv-ember-overlay)样式。
+
+使用了[ffxiv-pastry-fish-list](https://github.com/CodeZWT/ffxiv-pastry-fish-list)数据。
+
+感谢 [FFXIV ACT插件开发入门-Jim](https://www.lotlab.org/2022/02/06/ffxiv-act-plugin-development-introduce/)。
+
+感谢 菈米米
+
+感谢 所有FF14好友。
