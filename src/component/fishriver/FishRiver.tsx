@@ -6,6 +6,14 @@ import {getData} from "../../data/patch/fish";
 import {place} from "../../data/locale/placeNames";
 import {itemName} from "../../data/locale/item";
 import * as  fishKnowledge  from "../../data/patch/fishKnowledge";
+import * as wetherAll from "../../data/locale/weather";
+import InputDemo from '../input';
+import { match } from 'pinyin-pro';
+import * as  t1  from "../../data/tip1.js";
+import * as  t2  from "../../data/tip2.js";
+import * as  t4  from "../../data/tip4.js";
+import * as  t6  from "../../data/tip6.js";
+import * as  t7  from "../../data/tip7.js";
 
 const FishRiver = () => {
   const [animationDuration, setAnimationDuration] = useState<number>(5); // 初始化动画持续时间为5秒
@@ -13,13 +21,22 @@ const FishRiver = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredFish, setFilteredFish] = useState([]);
   const [plannedFish, setPlannedFish] = useState(Object); // [
+  const [statusMsg,setStatusMsg] = useState('');
   let fishes = Object;
   fishes = getData();
   const firstTenFish = Object.values(fishes).slice(0, 1);
   // console.info(fishes);
   const times = ["0", "1", "2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23"] 
+  
+  
+  
   useEffect(() => {
-    
+    const anglelist = [];
+    const fishGameDataCN = getData();
+    for(const f in fishGameDataCN){
+      anglelist.push(fishGameDataCN[f]['anglerFishId']+'');
+    }
+    console.info(anglelist);
     setPlannedFish(firstTenFish)
     const newDuration = 0;
     setAnimationDuration(newDuration);
@@ -40,8 +57,11 @@ const FishRiver = () => {
       setFilteredFish([]);
       return;
     }
-    const filtered = Object.entries(fishes).filter(([key, fish]) =>
-      getChineseFishName(fish).toLowerCase().includes(term.toLowerCase())
+     
+    const filtered = Object.entries(fishes).filter(([key, fish]) =>{
+      // return getChineseFishName(fish).toLowerCase().includes(term.toLowerCase())
+      return match(getChineseFishName(fish),term);
+    }
     );
     if(filtered.length>5){
       const temp = filtered.slice(0, 5);
@@ -52,13 +72,51 @@ const FishRiver = () => {
     
   };
 
-  const handleClick = (i: number) => {
+  const handleClick = (i: string,l:number[]) => {
     //console.info(i);
+    let msg = "";
+    let weather = ""
+    const hh = parseInt(i)<9?'0'+i:i+'';
+    const time = '时间：'+hh+':00:00'
+    msg = time;
+    if(i==='0'){
+      weather = getEzHoursWeather((parseInt(i)-8)+'',l);
+      msg = msg + ";上一个周期的天气是："+weather;
+    }
+    if(i==='23'){
+      weather = getEzHoursWeather((parseInt(i)+8)+'',l);
+      msg = msg + ";下一个周期的天气是："+weather;
+    }
+   
+    setStatusMsg(msg);
   };
   const displayFishInfo = (fish: any) => {
-      console.info(fish);
-      console.info(getChineseFishName(fish));
-      console.info(fish.locations);
+    let msg = "";
+    const fishTipsList = [t1,t2,t4,t6,t7];
+    for(let i=0;i<fishTipsList.length;i++){
+      if(i==0 || i == 1){
+        // handle tip1
+        if(fish._id in fishTipsList[i].default){
+          if(fishTipsList[i].default['requirements']){
+            msg = fishTipsList[i].default['requirements'];
+          }else{
+            msg = fishTipsList[i].default[fish._id]['trick'];
+          }
+          break;
+        }
+      }else{
+        if(fish._id in fishTipsList[i].default['TIPS']){
+          msg = fishTipsList[i].default['TIPS'][fish._id]['trick'];
+          break;
+        }
+      }
+    }
+    
+    console.info(fish);
+    console.info(getChineseFishName(fish));
+    console.info(fish.locations);
+    msg += getChineseFishName(fish);
+    setStatusMsg(msg);
   };
   // const calculateNewDuration = (): number => {
   //   const timeLength = 70*3600;
@@ -77,18 +135,24 @@ const FishRiver = () => {
     const temp = plannedFish;
     temp.push(fish);
     setPlannedFish(temp);
+    setSearchTerm("")
+    setFilteredFish([])
   }
 
   return (
     <>
     <div>
       <div>
-          <input
+      <div className="statusMsg" dangerouslySetInnerHTML={{__html:statusMsg}}></div>
+        <div className="searchTab">
+          <InputDemo
               type="text"
-              placeholder="Search fish..."
+              placeholder="使用首字母搜索鱼名"
               value={searchTerm}
               onChange={handleSearchChange}
             />
+            
+        </div>
             <div className="searchedArea">
               {filteredFish.map(([key, fish]) => (
                 <div className="searchedFish" key={key} onClick={() => addFish(fish)}>
@@ -114,7 +178,7 @@ const FishRiver = () => {
             <div className="board-row balance" key={key}>
               <Square value={getChineseFishName(fish)} onSquareClick={() => displayFishInfo(fish)} weather={getChineseFishName(fish)} fish={null} />
               {times.map((itemx, indexx) => (
-                <Square value={itemx} onSquareClick={() => handleClick(indexx)} weather={getEzHoursWeather(itemx, fish.locations)} fish={fish}  />
+                <Square value={itemx} onSquareClick={() => handleClick(itemx,fish.locations)} weather={getEzHoursWeather(itemx, fish.locations)} fish={fish} preWeather={getPreWeather(itemx,fish.locations)} />
               ))}
             </div>
           ))}
@@ -128,23 +192,57 @@ const FishRiver = () => {
   );
 };
 
-function Square({ value, onSquareClick, weather, fish }) {
+function Square({ value, onSquareClick, weather, fish, preWeather }) {
   const [timeOn, setTimeOn] = useState(false);
+  const [fishable, setFishable] = useState(false);
+  let rightPreWeather = false;
+  let rightWeather = false;
   //console.info(value)
  
   useEffect(() => {
     if(fish){
       const start = fishKnowledge.default[fish._id]['startHour'];
       const end = fishKnowledge.default[fish._id]['endHour'];
-      if(start<=value && value <end){
-        setTimeOn(true);
-        console.info(`${value} in [${start},${end})`)
-      } 
+      const fishPrevWeathers = fishKnowledge.default[fish._id]['prevWeathers'];
+      const fishWeatherNum = fishKnowledge.default[fish._id]['weathers'];
+      const fishWeather = [];
+      if(fishPrevWeathers.length ==0 || fishPrevWeathers.includes(preWeather)){
+        rightPreWeather = true;
+      }
+      for(const w in fishWeatherNum){
+        fishWeather.push(wetherAll.default[fishWeatherNum[w]]['name_chs']);
+      }
+      if(fishWeather.length == 0 || fishWeather.includes(weather)){
+        rightWeather = true;
+      }
+      if(end < start){
+        if(start<=value && value <24){
+          setTimeOn(true)
+          if(rightPreWeather && rightWeather){
+            setFishable(true)
+          }
+        }
+        if(start>=0 && value <end){
+          setTimeOn(true)
+          if(rightPreWeather && rightWeather){
+            setFishable(true)
+          }
+        }
+      }else{
+        if(start<=value && value <end){
+          setTimeOn(true);
+          if(rightPreWeather && rightWeather){
+            setFishable(true)
+          }
+          console.info(`${value} in [${start},${end})`)
+        } 
+      }
+      
     }
    
   }, []);
   return (
-    <button className={`square ${timeOn ? 'onTime' : 'notOnTime'}`} onClick={onSquareClick} >
+    <button className={`square ${timeOn ? 'onTime' : 'notOnTime'} ${fishable ? 'onFishTime' : null}`} onClick={onSquareClick} >
       {weather}
     </button>
   );
@@ -179,6 +277,56 @@ function getEzHoursWeather(ezHours:string, locations:number[]){
   eorzeaTime.setHours(Number(ezHours));
   eorzeaTime.setMinutes(0);
   eorzeaTime.setSeconds(0);
+  // fixed https://gist.github.com/zyzsdy/ecf41a4cc04e2f95839a72291a207347#file-ffxiv-weather-js-L456
+  eorzeaTime = new Date(eorzeaTime.getTime() + (8 * 3600000));
+  // 反向计算真实时间 
+  const LT_TIME = eorzeaTime.getTime() / E_TIME; // 艾欧泽亚时间转换为本地时间
+  // console.info(LT_TIME);
+  const realTime = new Date(LT_TIME); // 真实时间对象
+  realTime.setHours(realTime.getHours()); // 时区转换
+  // console.info(eorzeaTime);
+
+  // console.info(realTime);
+ 
+  let pl:Place = {
+    name_chs: '',
+    name_en: '',
+    name_ja: '',
+  };
+  for(const l in locations){
+    // console.info(place)
+    const v = locations[l];
+    if(v in place){
+      pl = place[v]
+      // console.info(pl)
+      break
+    }
+  }
+  let weatherName = "未知";
+  if(pl.name_en!==''){
+    const p = getTargetValue(realTime.getTime());
+    const weather = getAreaPrecent();
+    const  w:WeatherEntry[] =  weather[pl.name_en];
+    if(w){
+      weatherName = getRealWeather(w,p);
+      weatherName = getChineseWeather(weatherName);
+    }
+  }
+  return weatherName;
+}
+function getPreWeather(ezHours:string, locations:number[]){ 
+  // console.info(ezHours);
+  // console.info(locations);
+  const E_TIME = 20.5714285714; // ET相对于LT的倍数 
+  const NOW_TIME = new Date().getTime(); // 取当前时间戳
+  const FLOOR_TIME = new Date().setTime(Math.floor(NOW_TIME * E_TIME));//创建新的时间对象
+  let eorzeaTime = new Date(new Date().setTime(FLOOR_TIME)); // 艾欧泽亚的时间对象
+   
+  eorzeaTime.setHours(Number(ezHours));
+  eorzeaTime.setMinutes(0);
+  eorzeaTime.setSeconds(0);
+
+  eorzeaTime.setHours(eorzeaTime.getHours()-8);
   // fixed https://gist.github.com/zyzsdy/ecf41a4cc04e2f95839a72291a207347#file-ffxiv-weather-js-L456
   eorzeaTime = new Date(eorzeaTime.getTime() + (8 * 3600000));
   // 反向计算真实时间 

@@ -1,6 +1,7 @@
 import knowledge from "./fishKnowledge";
 import {keyBy} from "./utils";
-const fishGameDataCN = {
+const fishGameDataCN = 
+{
   4776: {
     _id: 4776,
     dataMissing: true,
@@ -345,7 +346,7 @@ const fishGameDataCN = {
     dataMissing: false,
     anglerFishId: 117,
     bait: 2601,
-    locations: [81, 90],
+    locations: [506],
     patch: 2,
     folklore: null,
     collectable: false,
@@ -2858,7 +2859,7 @@ const fishGameDataCN = {
     dataMissing: false,
     anglerFishId: 292,
     bait: 4898,
-    locations: [63],
+    locations: [33],
     patch: 2.4,
     folklore: null,
     collectable: false,
@@ -10616,7 +10617,7 @@ const fishGameDataCN = {
     dataMissing: true,
     anglerFishId: 3179,
     bait: 27589,
-    locations: [201],
+    locations: [2951],
     patch: 5.1,
     folklore: 2507,
     collectable: false,
