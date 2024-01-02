@@ -2,6 +2,7 @@
 
 ff14 国服act钓鱼插件
 
+![elmiao](https://github.com/kokolokksk/fish-ffxiv-plugin/assets/12725100/9170fc3e-cc7c-43d2-b68d-65ac11ad9524)
 
 ### 所在频道(拉拉肥)
 
