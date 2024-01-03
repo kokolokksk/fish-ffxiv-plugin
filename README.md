@@ -2,10 +2,25 @@
 
 ff14 国服act钓鱼插件
 
+[悬浮窗预设预览](https://ffxiv.loli.monster/)
+
 [插件地址](https://github.com/kokolokksk/ACT-P-CAT/releases/tag/0.0.1)
 
 ![elmiao](https://github.com/kokolokksk/fish-ffxiv-plugin/assets/12725100/9170fc3e-cc7c-43d2-b68d-65ac11ad9524)
 
+### 使用说明
+
+需要act解析插件；overlayPlugin插件；
+
+添加[饿了喵](https://github.com/kokolokksk/ACT-P-CAT/releases/tag/0.0.1)到act插件中，再到OverlayPlugin设置中添加预设窗口【喵】即可。（可能需要重载OverlayPlugin）
+
+输入首字母查询鱼类，点击添加到时间表；
+
+单击左侧鱼名查看详情，双击移除。
+
+单击首尾时间格查看上下天气周期；
+
+绿色格表示 天气时间符合。红色刻度线是当前时间。
 ### 所在频道(拉拉肥)
 
 QQ频道: 拉拉肥;
