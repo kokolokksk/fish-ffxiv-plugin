@@ -1,7 +1,7 @@
 import React, { Component, createRef } from 'react';
 import PropTypes from 'prop-types';
 
-class InputDemo extends Component {
+class Input extends Component {
 
     inputRef = createRef();
 
@@ -51,19 +51,19 @@ class InputDemo extends Component {
         return <input
             ref={this.inputRef}
             type="text"
-            placeholder="使用首字母搜索鱼名"
+            placeholder="使用首字母搜索鱼名或钓场"
             style={{ width: 300, height: 30, outline: 'none',imeMode: 'inactive',background: 'rgb(99,99,99)' }}
             {...commonProps}
         />
     }
 }
 
-InputDemo.propTypes = {
+Input.propTypes = {
     onChange: PropTypes.func
 };
 
-InputDemo.defaultProps = {
+Input.defaultProps = {
     onChange: () => {}
 };
 
-export default InputDemo;
+export default Input;
