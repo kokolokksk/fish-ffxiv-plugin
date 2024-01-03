@@ -15,6 +15,7 @@ import * as  t2  from "../../data/tip2.js";
 import * as  t4  from "../../data/tip4.js";
 import * as  t6  from "../../data/tip6.js";
 import * as  t7  from "../../data/tip7.js";
+import { number } from "prop-types";
 
 const FishRiver = () => {
   const [animationDuration, setAnimationDuration] = useState<number>(5); // 初始化动画持续时间为5秒
@@ -23,6 +24,7 @@ const FishRiver = () => {
   const [filteredFish, setFilteredFish] = useState([]);
   const [plannedFish, setPlannedFish] = useState(Object); // [
   const [statusMsg,setStatusMsg] = useState('');
+  const [timeChange, setTimeChange] = useState(Object);
   let fishes = Object;
   fishes = getData();
 
@@ -68,7 +70,10 @@ const FishRiver = () => {
     setAnimationDuration(newDuration);
     const timer = setInterval(() => {
       const newInitialPosition = calculateNewPosition();
-      // console.info(newInitialPosition);
+      console.info(newInitialPosition);
+      if(newInitialPosition >= 4 && newInitialPosition <= 4.2 ){
+        setTimeChange(new Date());
+      }
       setInitialPosition(newInitialPosition); 
       setInitialPosition(newInitialPosition); 
     }, 1000);
@@ -221,9 +226,9 @@ const FishRiver = () => {
          
           {Object.entries(plannedFish).map(([key, fish]) => (
             <div className="board-row balance" key={key}>
-              <Square value={getChineseFishName(fish)} onSquareDoubleClick={() => removeFish(plannedFish,fish)} onSquareClick={() => displayFishInfo(fish)} weather={getChineseFishName(fish)} fish={null} />
+              <Square timeChange={timeChange} value={getChineseFishName(fish)} onSquareDoubleClick={() => removeFish(plannedFish,fish)} onSquareClick={() => displayFishInfo(fish)} weather={getChineseFishName(fish)} fish={null} />
               {times.map((itemx, indexx) => (
-                <Square key={key+'_'+indexx} value={itemx} onSquareClick={() => handleClick(itemx,fish.locationsCN)} weather={getEzHoursWeather(itemx, fish.locationsCN)} fish={fish} preWeather={getPreWeather(itemx,fish.locationsCN)} />
+                <Square timeChange={timeChange} key={key+'_'+indexx} value={itemx} onSquareClick={() => handleClick(itemx,fish.locationsCN)} weather={getEzHoursWeather(itemx, fish.locationsCN)} fish={fish} preWeather={getPreWeather(itemx,fish.locationsCN)} />
               ))}
             </div>
           ))}
@@ -237,7 +242,7 @@ const FishRiver = () => {
   );
 };
 
-function Square({ value, onSquareDoubleClick, onSquareClick, weather, fish, preWeather }) {
+function Square({ value, onSquareDoubleClick, onSquareClick, weather, fish, preWeather, timeChange }) {
   const [timeOn, setTimeOn] = useState(false);
   const [fishable, setFishable] = useState(false);
   let rightPreWeather = false;
@@ -289,7 +294,7 @@ function Square({ value, onSquareDoubleClick, onSquareClick, weather, fish, preW
       
     }
    
-  }, [fish]);
+  }, [fish,timeChange]);
   return (
     <button className={`square ${timeOn ? 'onTime' : 'notOnTime'} ${fishable ? 'onFishTime' :''}`} onClick={onSquareClick} onDoubleClick={onSquareDoubleClick} >
       {weather}
