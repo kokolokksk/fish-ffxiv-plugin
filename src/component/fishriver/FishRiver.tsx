@@ -261,7 +261,7 @@ function Square({ value, onSquareDoubleClick, onSquareClick, weather, fish, preW
         rightWeather = true;
       }
       if(end < start){
-        if(start<=value && value <24){
+        if(start<=value && value <24 || 0<=value && value <end){
           setTimeOn(true)
           if(rightPreWeather && rightWeather){
             setFishable(true)
@@ -270,17 +270,8 @@ function Square({ value, onSquareDoubleClick, onSquareClick, weather, fish, preW
           }
         }else{
           setTimeOn(false)
-        }
-        if(start>=0 && value <end){
-          setTimeOn(true)
-          if(rightPreWeather && rightWeather){
-            setFishable(true)
-          }else{
-            setFishable(false)
-          }
-        }else{
-          setTimeOn(false)
-        }
+          setFishable(false)
+        } 
       }else{
         if(start<=value && value <end){
           setTimeOn(true);
@@ -292,6 +283,7 @@ function Square({ value, onSquareDoubleClick, onSquareClick, weather, fish, preW
          // console.info(`${value} in [${start},${end})`)
         }else{
           setTimeOn(false)
+          setFishable(false)
         }
       }
       
@@ -299,7 +291,7 @@ function Square({ value, onSquareDoubleClick, onSquareClick, weather, fish, preW
    
   }, [fish]);
   return (
-    <button className={`square ${timeOn ? 'onTime' : 'notOnTime'} ${fishable ? 'onFishTime' : null}`} onClick={onSquareClick} onDoubleClick={onSquareDoubleClick} >
+    <button className={`square ${timeOn ? 'onTime' : 'notOnTime'} ${fishable ? 'onFishTime' :''}`} onClick={onSquareClick} onDoubleClick={onSquareDoubleClick} >
       {weather}
     </button>
   );
