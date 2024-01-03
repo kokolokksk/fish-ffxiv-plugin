@@ -45,10 +45,13 @@ const FishRiver = () => {
   
 
   addCNLocation(fishes);
-  const firstTenFish = Object.values(fishes).slice(0, 1);
+  let firstTenFish = Object.values(fishes).slice(0, 1);
   // console.info(fishes);
   const times = ["0", "1", "2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23"] 
-  
+  const localFish = localStorage.getItem("plannedFish");
+  if(localFish){
+    firstTenFish = JSON.parse(localFish);
+  }
   
   
   useEffect(() => {
@@ -58,6 +61,8 @@ const FishRiver = () => {
       anglelist.push(fishGameDataCN[f]['anglerFishId']+'');
     }
     // console.info(anglelist);
+    // load from local data
+    
     setPlannedFish(firstTenFish)
     const newDuration = 0;
     setAnimationDuration(newDuration);
@@ -111,6 +116,19 @@ const FishRiver = () => {
    
     setStatusMsg(msg);
   };
+  const removeFish = (pf,fish) => {
+    const newPf=[];
+    for(let i=0;i<pf.length;i++){
+      if(pf[i]===fish){
+        //
+      }else{
+        newPf.push(pf[i])
+      }
+    }
+    setPlannedFish(newPf);
+    localStorage.setItem("plannedFish",JSON.stringify(newPf));
+  }
+ 
   const displayFishInfo = (fish: any) => {
     let msg = "";
     const fishTipsList = [t1,t2,t4,t6,t7];
@@ -160,6 +178,7 @@ const FishRiver = () => {
     // console.info(fish);
     const temp = plannedFish;
     temp.push(fish);
+    localStorage.setItem("plannedFish",JSON.stringify(temp));
     setPlannedFish(temp);
     setSearchTerm("")
     setFilteredFish([])
@@ -202,7 +221,7 @@ const FishRiver = () => {
          
           {Object.entries(plannedFish).map(([key, fish]) => (
             <div className="board-row balance" key={key}>
-              <Square value={getChineseFishName(fish)} onSquareClick={() => displayFishInfo(fish)} weather={getChineseFishName(fish)} fish={null} />
+              <Square value={getChineseFishName(fish)} onSquareDoubleClick={() => removeFish(plannedFish,fish)} onSquareClick={() => displayFishInfo(fish)} weather={getChineseFishName(fish)} fish={null} />
               {times.map((itemx, indexx) => (
                 <Square value={itemx} onSquareClick={() => handleClick(itemx,fish.locationsCN)} weather={getEzHoursWeather(itemx, fish.locationsCN)} fish={fish} preWeather={getPreWeather(itemx,fish.locationsCN)} />
               ))}
@@ -218,7 +237,7 @@ const FishRiver = () => {
   );
 };
 
-function Square({ value, onSquareClick, weather, fish, preWeather }) {
+function Square({ value, onSquareDoubleClick, onSquareClick, weather, fish, preWeather }) {
   const [timeOn, setTimeOn] = useState(false);
   const [fishable, setFishable] = useState(false);
   let rightPreWeather = false;
@@ -268,7 +287,7 @@ function Square({ value, onSquareClick, weather, fish, preWeather }) {
    
   }, []);
   return (
-    <button className={`square ${timeOn ? 'onTime' : 'notOnTime'} ${fishable ? 'onFishTime' : null}`} onClick={onSquareClick} >
+    <button className={`square ${timeOn ? 'onTime' : 'notOnTime'} ${fishable ? 'onFishTime' : null}`} onClick={onSquareClick} onDoubleClick={onSquareDoubleClick} >
       {weather}
     </button>
   );
