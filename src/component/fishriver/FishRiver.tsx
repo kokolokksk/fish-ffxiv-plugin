@@ -125,8 +125,8 @@ const FishRiver = () => {
         newPf.push(pf[i])
       }
     }
-    setPlannedFish(newPf);
     localStorage.setItem("plannedFish",JSON.stringify(newPf));
+    setPlannedFish(newPf);
   }
  
   const displayFishInfo = (fish: any) => {
@@ -223,7 +223,7 @@ const FishRiver = () => {
             <div className="board-row balance" key={key}>
               <Square value={getChineseFishName(fish)} onSquareDoubleClick={() => removeFish(plannedFish,fish)} onSquareClick={() => displayFishInfo(fish)} weather={getChineseFishName(fish)} fish={null} />
               {times.map((itemx, indexx) => (
-                <Square value={itemx} onSquareClick={() => handleClick(itemx,fish.locationsCN)} weather={getEzHoursWeather(itemx, fish.locationsCN)} fish={fish} preWeather={getPreWeather(itemx,fish.locationsCN)} />
+                <Square key={key+'_'+indexx} value={itemx} onSquareClick={() => handleClick(itemx,fish.locationsCN)} weather={getEzHoursWeather(itemx, fish.locationsCN)} fish={fish} preWeather={getPreWeather(itemx,fish.locationsCN)} />
               ))}
             </div>
           ))}
@@ -265,27 +265,39 @@ function Square({ value, onSquareDoubleClick, onSquareClick, weather, fish, preW
           setTimeOn(true)
           if(rightPreWeather && rightWeather){
             setFishable(true)
+          }else{
+            setFishable(false)
           }
+        }else{
+          setTimeOn(false)
         }
         if(start>=0 && value <end){
           setTimeOn(true)
           if(rightPreWeather && rightWeather){
             setFishable(true)
+          }else{
+            setFishable(false)
           }
+        }else{
+          setTimeOn(false)
         }
       }else{
         if(start<=value && value <end){
           setTimeOn(true);
           if(rightPreWeather && rightWeather){
             setFishable(true)
+          }else{
+            setFishable(false)
           }
          // console.info(`${value} in [${start},${end})`)
-        } 
+        }else{
+          setTimeOn(false)
+        }
       }
       
     }
    
-  }, []);
+  }, [fish]);
   return (
     <button className={`square ${timeOn ? 'onTime' : 'notOnTime'} ${fishable ? 'onFishTime' : null}`} onClick={onSquareClick} onDoubleClick={onSquareDoubleClick} >
       {weather}
