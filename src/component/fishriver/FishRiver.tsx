@@ -8,6 +8,7 @@ import {itemName} from "../../data/locale/item";
 import * as  fishKnowledge  from "../../data/patch/fishKnowledge";
 import * as wetherAll from "../../data/locale/weather";
 import * as fishLocation from "../../data/patch/fishDataFull";
+import * as ff14anglerData from "../../data/patch/fishDataFull";
 import Input from '../input';
 import { match } from 'pinyin-pro';
 import * as  t1  from "../../data/tip1.js";
@@ -44,10 +45,22 @@ const FishRiver = () => {
       }
     }
   };
-  
+  const addAdditionalInfo = (ff14anglerData) => {
+    ff14anglerData.default.forEach((key,fish) => {
+      const anglerFishId = key;
+      for(const f in fishes){
+        const fishx = fishes[f]; 
+        const anglerFishIdx = fishx.anglerFishId;
+          if(anglerFishIdx===anglerFishId+''){
+            fish = {...fish,...fishx};
+          }
+      }
+    });
+  }
 
-  addCNLocation(fishes);
-  let firstTenFish = Object.values(fishes).slice(0, 1);
+  //addCNLocation(fishes);
+  addAdditionalInfo(ff14anglerData);
+  let firstTenFish = Object.values(ff14anglerData).slice(0, 1);
   // console.info(fishes);
   const times = ["0", "1", "2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23"] 
   const localFish = localStorage.getItem("plannedFish");
@@ -71,9 +84,7 @@ const FishRiver = () => {
     const timer = setInterval(() => {
       const newInitialPosition = calculateNewPosition();
       console.info(newInitialPosition);
-      if(newInitialPosition >= 4 && newInitialPosition <= 4.2 ){
-        setTimeChange(new Date());
-      }
+      setTimeChange(new Date());
       setInitialPosition(newInitialPosition); 
       setInitialPosition(newInitialPosition); 
     }, 1000);
@@ -89,12 +100,12 @@ const FishRiver = () => {
       return;
     }
      
-    let filtered = Object.entries(fishes).filter(([key, fish]) =>{
+    let filtered = Object.entries(ff14anglerData).filter(([key, fish]) =>{
       // return getChineseFishName(fish).toLowerCase().includes(term.toLowerCase())
       return match(getChineseFishName(fish),term);
     });
     if(filtered.length==0){
-      filtered = Object.entries(fishes).filter(([key, fish]) =>{
+      filtered = Object.entries(ff14anglerData).filter(([key, fish]) =>{
         // return getChineseFishName(fish).toLowerCase().includes(term.toLowerCase())
         //console.info(fish?.sportCN?.[0]);
         for (const l in fish?.sportCN){

@@ -6,6 +6,7 @@ import time
 import random
 import json
 import numpy as np
+import re
 # list 转成Json格式数据
 def listToJson(lst):
     
@@ -1287,11 +1288,13 @@ x = 410
 
 def parseAndSave(rc,i,f):
   ic = rc.find_all(attrs={'name':'spot_delete'})
+  if len(ic) == 0:
+      f.write('"'+str(i)+'":{')
   for item in ic:
     table = item.find(class_='info_section list')
     area = table.find_all(class_='area')
-    mapDc = "fishSpotCN:["
-    mapF = " locationsCN:["
+    mapDc = '"fishSpotCN":['
+    mapF =  '"locationsCN":['
     cns = ""
     cnSpot = ""
     spots = table.find_all('a')
@@ -1299,21 +1302,44 @@ def parseAndSave(rc,i,f):
         href_value = spot.get('href')
         if href_value is not None :
             if href_value.find('spot') != -1:
-                cnSpot += ",'"+spot.text+"'"
+                cnSpot += ',"'+spot.text+'"'
     cnSpot = cnSpot[1:]
     for a in area:
         print(a.text)
-        cns += ",'"+a.text+"'"
+        cns += ',"'+a.text+'"'
     cns = cns[1:]
-    mapF += cns + "],"
-    mapDc += cnSpot + "],"
-    print(mapF)
-    print(mapDc)
+    mapF += cns + '],'
+    mapDc += cnSpot + '],'
     f.write('"'+str(i)+'":{'+mapF)
     f.write('\n')
-    f.write(mapDc+'},')
+    f.write(mapDc)
     f.write('\n')
-    
+#   timeline = rc.find(class_='tz_bar')
+#   if timeline is not None:
+#     fishtime = set()
+#     for ti in timeline:
+#       ti.find_next_sibling('label')  
+#       fishtime.add(int(ti.text))
+#     f.write('"fishTime":['+','.join(map(str, fishtime))+'],')
+#     f.write('\n')
+  fishName = rc.find(class_='name')
+  if fishName is None:
+        return
+  f.write('"fishName":{"cn":"'+fishName.text+'"},')
+  b = rc.find_all(class_='bait')
+  f.write('"bait":[')
+  if len(b) != 0:
+    for alabel in b:
+      f.write('"'+alabel.text+'",')
+  else:
+    btable = rc.find(attrs={'name':'bait_delete'})
+    matches = re.findall(r'\b([A-Z])\b', btable.text)
+    # 格式化结果为字符串
+    result_string = ",".join(matches)
+    f.write('"'+result_string+'",')         
+  f.write('],')
+  f.write('\n')
+  f.write('},')
 
 def getData(i,url,USER_AGENTS,f):
     print(i)
@@ -1341,11 +1367,15 @@ def getData(i,url,USER_AGENTS,f):
 #while i<=x:#x:#1132
 with open('./fishDataFull.json','w',encoding='utf-8') as f:
     f.write('{')
+    fishData = list(range(209, 3780))
     for fish_id in fishData:
         try:
             getData(fish_id,url,USER_AGENTS,f)
             f.flush()
+            sleepTime = random.randint(1, 3)
+            time.sleep(sleepTime)
         except Exception as e:
+            continue
             getData(fish_id,url,USER_AGENTS,f)
         else:
             i = i + 1
