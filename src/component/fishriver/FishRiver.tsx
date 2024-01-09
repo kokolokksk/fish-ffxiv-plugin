@@ -7,7 +7,6 @@ import {place} from "../../data/locale/placeNames";
 import {itemName} from "../../data/locale/item";
 import * as  fishKnowledge  from "../../data/patch/fishKnowledge";
 import * as wetherAll from "../../data/locale/weather";
-import * as fishLocation from "../../data/patch/fishDataFull";
 import * as ff14anglerData from "../../data/patch/fishDataFull";
 import Input from '../input';
 import { match } from 'pinyin-pro';
@@ -34,8 +33,8 @@ const FishRiver = () => {
     for(const f in fishes){
       const fish = fishes[f]; 
       const anglerFishId = fish.anglerFishId;
-      for(const l in fishLocation.default){
-        const location = fishLocation.default[l];
+      for(const l in ff14anglerData.default){
+        const location = ff14anglerData.default[l];
         if(l===anglerFishId+''){
           fish.locationsCN = location['locationsCN'];
           if(location['fishSpotCN']){
@@ -45,14 +44,16 @@ const FishRiver = () => {
       }
     }
   };
+  let fullFf14anglerData = [];
   const addAdditionalInfo = (ff14anglerData) => {
-    ff14anglerData.default.forEach((key,fish) => {
-      const anglerFishId = key;
+    ff14anglerData.default.forEach((fish) => {
+      const anglerFishId = fish.id;
       for(const f in fishes){
         const fishx = fishes[f]; 
         const anglerFishIdx = fishx.anglerFishId;
-          if(anglerFishIdx===anglerFishId+''){
+          if(anglerFishIdx===anglerFishId){
             fish = {...fish,...fishx};
+            fullFf14anglerData.push(fish);
           }
       }
     });
@@ -60,7 +61,7 @@ const FishRiver = () => {
 
   //addCNLocation(fishes);
   addAdditionalInfo(ff14anglerData);
-  let firstTenFish = Object.values(ff14anglerData).slice(0, 1);
+  let firstTenFish = Object.values(fullFf14anglerData).slice(0, 1);
   // console.info(fishes);
   const times = ["0", "1", "2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23"] 
   const localFish = localStorage.getItem("plannedFish");
@@ -100,12 +101,12 @@ const FishRiver = () => {
       return;
     }
      
-    let filtered = Object.entries(ff14anglerData).filter(([key, fish]) =>{
+    let filtered = Object.entries(fullFf14anglerData).filter(([key,fish]) =>{
       // return getChineseFishName(fish).toLowerCase().includes(term.toLowerCase())
-      return match(getChineseFishName(fish),term);
+      return match(fish.fishName.cn,term);
     });
     if(filtered.length==0){
-      filtered = Object.entries(ff14anglerData).filter(([key, fish]) =>{
+      filtered = Object.entries(fullFf14anglerData).filter((fish) =>{
         // return getChineseFishName(fish).toLowerCase().includes(term.toLowerCase())
         //console.info(fish?.sportCN?.[0]);
         for (const l in fish?.sportCN){
@@ -196,8 +197,8 @@ const FishRiver = () => {
     //console.info(fish.locations);
     msg += getChineseFishName(fish);
     msg += "\n  位置：";
-    for(const l in fish.sportCN){
-      msg += fish.sportCN[l];
+    for(const l in fish.fishSpotCN){
+      msg += fish.fishSpotCN[l];
       msg += " ";
     }
     setStatusMsg(msg);
@@ -359,6 +360,7 @@ function getEzHoursWeather(ezHours:string, locations:string[]){
   // console.info(ezHours);
   // console.info(locations);
   const E_TIME = 20.5714285714; // ET相对于LT的倍数 
+  const druationEzHoursAtLt:number = 60*60/E_TIME; // 1个艾欧泽亚小时在现实中的秒数
   const NOW_TIME = new Date().getTime(); // 取当前时间戳
   const FLOOR_TIME = new Date().setTime(Math.floor(NOW_TIME * E_TIME));//创建新的时间对象
   let eorzeaTime = new Date(new Date().setTime(FLOOR_TIME)); // 艾欧泽亚的时间对象
@@ -367,11 +369,13 @@ function getEzHoursWeather(ezHours:string, locations:string[]){
   eorzeaTime.setMinutes(0);
   eorzeaTime.setSeconds(0);
   // fixed https://gist.github.com/zyzsdy/ecf41a4cc04e2f95839a72291a207347#file-ffxiv-weather-js-L456
-  eorzeaTime = new Date(eorzeaTime.getTime() + (8 * 3600000));
+  //eorzeaTime = new Date(eorzeaTime.getTime() + (8 * 3600000));
   // 反向计算真实时间 
-  const LT_TIME = eorzeaTime.getTime() / E_TIME; // 艾欧泽亚时间转换为本地时间
+  const LT_TIME = new Date(eorzeaTime.getTime() / E_TIME); // 艾欧泽亚时间转换为本地时间
+  const addSeconds = druationEzHoursAtLt*8;
+  LT_TIME.setSeconds(LT_TIME.getSeconds()+addSeconds);
   // console.info(LT_TIME);
-  const realTime = new Date(LT_TIME); // 真实时间对象
+  const realTime = LT_TIME; // 真实时间对象
   realTime.setHours(realTime.getHours()); // 时区转换
   // console.info(eorzeaTime);
 

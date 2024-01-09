@@ -1288,8 +1288,8 @@ x = 410
 
 def parseAndSave(rc,i,f):
   ic = rc.find_all(attrs={'name':'spot_delete'})
-  if len(ic) == 0:
-      f.write('"'+str(i)+'":{')
+  if len(ic) != 0:
+      f.write('{ "id":'+str(i)+',')
   for item in ic:
     table = item.find(class_='info_section list')
     area = table.find_all(class_='area')
@@ -1310,7 +1310,7 @@ def parseAndSave(rc,i,f):
     cns = cns[1:]
     mapF += cns + '],'
     mapDc += cnSpot + '],'
-    f.write('"'+str(i)+'":{'+mapF)
+    f.write(mapF)
     f.write('\n')
     f.write(mapDc)
     f.write('\n')
@@ -1327,17 +1327,32 @@ def parseAndSave(rc,i,f):
         return
   f.write('"fishName":{"cn":"'+fishName.text+'"},')
   b = rc.find_all(class_='bait')
-  f.write('"bait":[')
   if len(b) != 0:
+    f.write('"bait":[')
+    baits = ""
     for alabel in b:
-      f.write('"'+alabel.text+'",')
+        baits += '"'+alabel.text + '",'
+    f.write(baits[:-1])
+    f.write('],')
+    f.write('\n')
   else:
     btable = rc.find(attrs={'name':'bait_delete'})
-    matches = re.findall(r'\b([A-Z])\b', btable.text)
-    # 格式化结果为字符串
-    result_string = ",".join(matches)
-    f.write('"'+result_string+'",')         
-  f.write('],')
+    if btable is not None:
+        f.write('"bait":[')
+        # 删除多余的空白和换行符
+        cleaned_text =  btable.text.strip().split("选饵", 1)[1].strip()
+        # 用逗号替换换行符
+        result_string = cleaned_text.replace("\n", ",")
+        # 删除逗号前后的空白
+        result_string = result_string.replace(", ", ",")
+        if result_string.endswith(","):
+            result_string = result_string[:-1]
+            f.write('"'+result_string+'"')         
+        f.write('],')
+        f.write('\n')
+  span_element = rc.find('span', class_='patch')
+  patch_value = span_element['patch']
+  f.write('"patch": "'+patch_value+'"')
   f.write('\n')
   f.write('},')
 
@@ -1366,8 +1381,8 @@ def getData(i,url,USER_AGENTS,f):
            
 #while i<=x:#x:#1132
 with open('./fishDataFull.json','w',encoding='utf-8') as f:
-    f.write('{')
-    fishData = list(range(209, 3780))
+    f.write('[')
+    fishData = list(range(1, 3780))
     for fish_id in fishData:
         try:
             getData(fish_id,url,USER_AGENTS,f)
@@ -1379,6 +1394,6 @@ with open('./fishDataFull.json','w',encoding='utf-8') as f:
             getData(fish_id,url,USER_AGENTS,f)
         else:
             i = i + 1
-    f.write('}')
+    f.write(']')
     f.close()
  

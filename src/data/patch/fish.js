@@ -13964,7 +13964,7 @@ const combineKnowledge = gameData => {
 const fishCN = combineKnowledge(fishGameDataCN)
 
 const fishGlobalAddon = combineKnowledge(fishGameDataGlobalAddon)
-console.log(fishCN, fishGlobalAddon);
+// console.log(fishCN, fishGlobalAddon);
 const fishGlobal = Object.assign({}, fishCN, fishGlobalAddon)
 
 export const CN = fishCN;
