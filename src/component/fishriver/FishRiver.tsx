@@ -16,6 +16,7 @@ import * as  t4  from "../../data/tip4.js";
 import * as  t6  from "../../data/tip6.js";
 import * as  t7  from "../../data/tip7.js";
 import { number } from "prop-types";
+import { EorzeaClock,EorzeaWeather } from "./ffxivWeather";
 
 const FishRiver = () => {
   const [animationDuration, setAnimationDuration] = useState<number>(5); // 初始化动画持续时间为5秒
@@ -147,11 +148,11 @@ const FishRiver = () => {
     const time = '时间：'+hh+':00:00'
     msg = time;
     if(i==='0'){
-      weather = getEzHoursWeather((parseInt(i)-8)+'',l);
+      weather = getPreWeather(i+'',l);
       msg = msg + ";上一个周期的天气是："+weather;
     }
     if(i==='23'){
-      weather = getEzHoursWeather((parseInt(i)+8)+'',l);
+      weather = getNextWeather(i+'',l);
       msg = msg + ";下一个周期的天气是："+weather;
     }
    
@@ -356,31 +357,31 @@ function getChineseFishName(fish){
   }
   return name;
 }
-function getEzHoursWeather(ezHours:string, locations:string[]){ 
-  // console.info(ezHours);
-  // console.info(locations);
-  const E_TIME = 20.5714285714; // ET相对于LT的倍数 
-  const druationEzHoursAtLt:number = 60*60/E_TIME; // 1个艾欧泽亚小时在现实中的秒数
-  const NOW_TIME = new Date().getTime(); // 取当前时间戳
-  const FLOOR_TIME = new Date().setTime(Math.floor(NOW_TIME * E_TIME));//创建新的时间对象
-  let eorzeaTime = new Date(new Date().setTime(FLOOR_TIME)); // 艾欧泽亚的时间对象
-   
-  eorzeaTime.setHours(Number(ezHours));
-  eorzeaTime.setMinutes(0);
-  eorzeaTime.setSeconds(0);
-  // fixed https://gist.github.com/zyzsdy/ecf41a4cc04e2f95839a72291a207347#file-ffxiv-weather-js-L456
-  //eorzeaTime = new Date(eorzeaTime.getTime() + (8 * 3600000));
-  // 反向计算真实时间 
-  const LT_TIME = new Date(eorzeaTime.getTime() / E_TIME); // 艾欧泽亚时间转换为本地时间
-  const addSeconds = druationEzHoursAtLt*8;
-  LT_TIME.setSeconds(LT_TIME.getSeconds()+addSeconds);
-  // console.info(LT_TIME);
-  const realTime = LT_TIME; // 真实时间对象
-  realTime.setHours(realTime.getHours()); // 时区转换
-  // console.info(eorzeaTime);
 
-  // console.info(realTime);
  
+ 
+function getEzHoursWeather(ezHours:string, locations:string[]){ 
+
+  //1. 当前艾欧泽亚时间
+const nowET = new EorzeaClock();
+let nowArae = nowET.getHours(); // 5
+if(nowArae>=0 && nowArae<8){
+  nowArae = 0
+}else if(nowArae>7 && nowArae<16){
+  nowArae = 1
+}else{
+  nowArae = 2
+}
+let timeline = [0]; 
+if(Number(ezHours)>=0 && Number(ezHours)<8){
+  
+  timeline = [0-nowArae];
+}else if(Number(ezHours)>7 && Number(ezHours)<16){
+  timeline = [1-nowArae];
+}else{
+  timeline = [2-nowArae];
+}
+const weatherSeeds = EorzeaWeather.forecastSeed(nowET,timeline);
   let pl:Place = {
     name_chs: '',
     name_en: '',
@@ -399,7 +400,7 @@ function getEzHoursWeather(ezHours:string, locations:string[]){
   }
   let weatherName = "未知";
   if(pl.name_chs!==''){
-    const p = getTargetValue(realTime.getTime());
+    const p = weatherSeeds;
     const weather = getAreaPrecent();
     const  w:WeatherEntry[] =  weather[pl.name_chs];
     if(w){
@@ -410,29 +411,19 @@ function getEzHoursWeather(ezHours:string, locations:string[]){
   return weatherName;
 }
 function getPreWeather(ezHours:string, locations:string[]){ 
-  // console.info(ezHours);
-  // console.info(locations);
-  const E_TIME = 20.5714285714; // ET相对于LT的倍数 
-  const NOW_TIME = new Date().getTime(); // 取当前时间戳
-  const FLOOR_TIME = new Date().setTime(Math.floor(NOW_TIME * E_TIME));//创建新的时间对象
-  let eorzeaTime = new Date(new Date().setTime(FLOOR_TIME)); // 艾欧泽亚的时间对象
-   
-  eorzeaTime.setHours(Number(ezHours));
-  eorzeaTime.setMinutes(0);
-  eorzeaTime.setSeconds(0);
-
-  eorzeaTime.setHours(eorzeaTime.getHours()-8);
-  // fixed https://gist.github.com/zyzsdy/ecf41a4cc04e2f95839a72291a207347#file-ffxiv-weather-js-L456
-  eorzeaTime = new Date(eorzeaTime.getTime() + (8 * 3600000));
-  // 反向计算真实时间 
-  const LT_TIME = eorzeaTime.getTime() / E_TIME; // 艾欧泽亚时间转换为本地时间
-  // console.info(LT_TIME);
-  const realTime = new Date(LT_TIME); // 真实时间对象
-  realTime.setHours(realTime.getHours()); // 时区转换
-  // console.info(eorzeaTime);
-
-  // console.info(realTime);
- 
+  if(ezHours!=='0'){
+    return '未知';
+  }
+  const nowET = new EorzeaClock(); 
+  let pre = -1;
+  if(nowET.getHours()>=0 && nowET.getHours()<8){ /* empty */ }else if(nowET.getHours()>7 && nowET.getHours()<16){
+    pre = -2
+  }else{
+    pre = -3
+  }
+  const weatherSeeds = EorzeaWeather.forecastSeed(nowET,[pre]);
+  const w = EorzeaWeather.getForecast('area.MiddleLa',weatherSeeds);
+  console.info(`pre weather is ${w} in et ${nowET.getHours()}`);
   let pl:Place = {
     name_chs: '',
     name_en: '',
@@ -452,7 +443,50 @@ function getPreWeather(ezHours:string, locations:string[]){
   let weatherName = "未知";
   //console.info(pl)
   if(pl.name_chs!==''){
-    const p = getTargetValue(realTime.getTime());
+    const p = weatherSeeds;
+    const weather = getAreaPrecent();
+    const  w:WeatherEntry[] =  weather[pl.name_chs];
+    if(w){
+      weatherName = getRealWeather(w,p);
+      weatherName = getChineseWeather(weatherName);
+    }
+  }
+  return weatherName;
+}
+function getNextWeather(ezHours:string, locations:string[]){ 
+  if(ezHours!=='23'){
+    return '未知';
+  }
+  const nowET = new EorzeaClock(); 
+  if(nowET.getHours()>=0 && nowET.getHours()<8){
+    nowET.addHours(16)
+  }else if(nowET.getHours()>7 && nowET.getHours()<16){
+    nowET.addHours(8)
+  }
+  
+  const weatherSeeds = EorzeaWeather.forecastSeed(nowET,[1]);
+  const w = EorzeaWeather.getForecast('area.MiddleLa',weatherSeeds);
+  console.info(`pre weather is ${w} in et ${nowET.getHours()}`);
+  let pl:Place = {
+    name_chs: '',
+    name_en: '',
+    name_ja: '',
+  };
+  for(const l in locations){
+    // console.info(place)
+    const v = locations[l];
+    for (const p in place){
+      if(place[p].name_chs===v && place[p].name_chs!==''){
+        pl = place[p]
+        //console.info(pl)
+        break
+      }  
+    }
+  }
+  let weatherName = "未知";
+  //console.info(pl)
+  if(pl.name_chs!==''){
+    const p = weatherSeeds;
     const weather = getAreaPrecent();
     const  w:WeatherEntry[] =  weather[pl.name_chs];
     if(w){
