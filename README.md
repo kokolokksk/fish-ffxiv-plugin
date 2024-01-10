@@ -46,6 +46,8 @@ QQ群：319833969
 
 使用了[ffxiv-pastry-fish-list](https://github.com/CodeZWT/ffxiv-pastry-fish-list)数据。
 
+使用了[天气计算](https://gist.github.com/zyzsdy/ecf41a4cc04e2f95839a72291a207347#file-ffxiv-weather-js-L456)。
+
 感谢 [FFXIV ACT插件开发入门-Jim](https://www.lotlab.org/2022/02/06/ffxiv-act-plugin-development-introduce/)。
 
 感谢 菈米米
