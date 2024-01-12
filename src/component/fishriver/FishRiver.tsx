@@ -355,6 +355,9 @@ function getChineseFishName(fish){
     // console.info(itemName[fish._id]);
     name = itemName[fish._id]['chs'];
   }
+  if(name==='未知'){
+    name = fish.fishName.cn;
+  }
   return name;
 }
 
