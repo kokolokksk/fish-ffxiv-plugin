@@ -85,7 +85,7 @@ const FishRiver = () => {
     setAnimationDuration(newDuration);
     const timer = setInterval(() => {
       const newInitialPosition = calculateNewPosition();
-      console.info(newInitialPosition);
+      // console.info(newInitialPosition);
       setTimeChange(new Date());
       setInitialPosition(newInitialPosition); 
       setInitialPosition(newInitialPosition); 
@@ -423,7 +423,7 @@ function getPreWeather(ezHours:string, locations:string[]){
   }
   const weatherSeeds = EorzeaWeather.forecastSeed(nowET,[pre]);
   const w = EorzeaWeather.getForecast('area.MiddleLa',weatherSeeds);
-  console.info(`pre weather is ${w} in et ${nowET.getHours()}`);
+  // console.info(`pre weather is ${w} in et ${nowET.getHours()}`);
   let pl:Place = {
     name_chs: '',
     name_en: '',
@@ -466,7 +466,7 @@ function getNextWeather(ezHours:string, locations:string[]){
   
   const weatherSeeds = EorzeaWeather.forecastSeed(nowET,[1]);
   const w = EorzeaWeather.getForecast('area.MiddleLa',weatherSeeds);
-  console.info(`pre weather is ${w} in et ${nowET.getHours()}`);
+  // console.info(`pre weather is ${w} in et ${nowET.getHours()}`);
   let pl:Place = {
     name_chs: '',
     name_en: '',

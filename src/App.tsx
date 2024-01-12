@@ -12,9 +12,9 @@ function App() {
     console.log(language.language, language.languageId);
     console.log(otherPlugin);
     // 添加数据处理
-    addOverlayListener('CombatData', (data) => {
-        console.log(`经历战斗: ${data.title} | ${data.duration} | 团伤: ${data.ENCDPS}`);
-    });
+    // addOverlayListener('CombatData', (data) => {
+    //     console.log(`经历战斗: ${data.title} | ${data.duration} | 团伤: ${data.ENCDPS}`);
+    // });
     // 注册完毕，启动悬浮窗事件
     startOverlayEvents();
   }

@@ -7,10 +7,10 @@ const FishNeverEat = (prop: any | undefined)  => {
     const data  = {
         ...prop,
       };
-      console.info(prop);
+      // console.info(prop);
       let listItems ;
       if(Array.isArray(data.data)){
-            console.info("is arrary")
+            // console.info("is arrary")
             listItems = data.data?.map((item, index) => (
             <li key={index}>{item}</li>
         ));
