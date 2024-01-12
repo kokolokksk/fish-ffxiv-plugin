@@ -6,21 +6,35 @@ ff14 国服act钓鱼插件
 
 [插件地址](https://github.com/kokolokksk/ACT-P-CAT/releases/tag/0.0.1)
 
-![elmiao](https://github.com/kokolokksk/fish-ffxiv-plugin/assets/12725100/9170fc3e-cc7c-43d2-b68d-65ac11ad9524)
+![elemiaoui](https://github.com/kokolokksk/fish-ffxiv-plugin/assets/12725100/cb3bd409-65b4-48ed-b4c9-ee0a6f8d8e34)
 
 ### 使用说明
 
-需要act解析插件；overlayPlugin插件；
+- 需要act解析插件；overlayPlugin插件；
 
-添加[饿了喵](https://github.com/kokolokksk/ACT-P-CAT/releases/tag/0.0.1)到act插件中，再到OverlayPlugin设置中添加预设窗口【喵】即可。（可能需要重载OverlayPlugin）
+- 首先添加[饿了喵](https://github.com/kokolokksk/ACT-P-CAT/releases/tag/0.0.1)到act插件中，再到OverlayPlugin设置中添加预设窗口【喵】即可。（可能需要重载OverlayPlugin）
 
-输入首字母查询鱼类，点击添加到时间表；
+![addpreset](https://github.com/kokolokksk/fish-ffxiv-plugin/assets/12725100/09150c7f-4714-429f-a8d2-701ec19ecca4)
 
-单击左侧鱼名查看详情，双击移除。
+- 如果没有【喵】 reload elemiao或者overlayplugin
 
-单击首尾时间格查看上下天气周期；
+![reloadplugin](https://github.com/kokolokksk/fish-ffxiv-plugin/assets/12725100/8f3dd58d-7142-444a-a796-add82ae3c758)
 
-绿色格表示 天气时间符合。红色刻度线是当前时间。
+- 缩放大小 Plugins-OverlayPlugin.dll-> 对应【喵】的悬浮窗设置->高级中有缩放。为什么右下角直接拖放不行，我也不知道。
+
+![resize](https://github.com/kokolokksk/fish-ffxiv-plugin/assets/12725100/7fcf7b82-0b0f-411e-9c41-238ff2379b52)
+
+
+- 输入首字母查询鱼类，点击添加到时间表；
+
+- 单击左侧鱼名查看详情，双击移除。
+
+- 单击首尾时间格查看上下天气周期；
+
+- 绿色格表示 天气时间符合。红色刻度线是当前时间。
+
+- 若出现其他问题可以点击 时间右边的![reload](https://github.com/kokolokksk/fish-ffxiv-plugin/assets/12725100/fcedacd7-9199-40bf-998e-2fcb8f063168)
+进行刷新重载悬浮窗。
 ### 所在频道(拉拉肥)
 
 QQ频道: 拉拉肥;
