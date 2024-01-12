@@ -1,18 +1,35 @@
 import React, { useEffect, useState } from "react";
 const TimeTab = () => {
     const [time, setTime] = useState(new Date());
+    const [timeFFxivFont, setTimeFFxivFont] = useState('');
     const [eorzeaTime, setEorzeaTime] = useState(getEorzeaTime());
+    const [eorzeaTimeFFxivFont, setEorzeaTimeFFxivFont] = useState('');
     useEffect(() => {
         const timer = setInterval(() => {
             setTime(new Date());
+            const localTime = new Date().toLocaleTimeString();
+            const localTimeFFxivFont = localTime.replace(/[\d]/g, function (match) {
+                return '<i class="xiv number-' + match + '"></i>';
+            });
+            setTimeFFxivFont(localTimeFFxivFont);
             setEorzeaTime(getEorzeaTime());
+            const eorzeaTimeFFxivFont = getEorzeaTime().replace(/[\d]/g, function (match) {
+                return '<i class="xiv number-' + match + '"></i>';
+            });
+            setEorzeaTimeFFxivFont(eorzeaTimeFFxivFont);
         }, 1000);
         return () => clearInterval(timer);
     }, []);
     return (  
         <>
-            <div style={{fontSize:'17px'}}> 本地时间:{time.toLocaleTimeString()}&nbsp;&nbsp;&nbsp;&nbsp;
-                   艾欧泽亚时间：{eorzeaTime}
+            <div style={{fontSize:'17px',display:'flex',justifyContent:'center'}}> 
+            <i className="xiv local-time-chs"></i>
+            <div dangerouslySetInnerHTML={{__html:timeFFxivFont}}>
+                {/* {time.toLocaleTimeString()} */}
+            </div>&nbsp;&nbsp;&nbsp;&nbsp;
+            <i className="xiv eorzea-time-chs"></i>
+            <div dangerouslySetInnerHTML={{__html:eorzeaTimeFFxivFont}}></div>&nbsp;&nbsp;&nbsp;&nbsp;
+            <div><span style={{cursor:'pointer'}} onClick={() => reloadEleMiao()}><i className="xiv elv"></i></span></div>
             </div>
         </>
     );
@@ -32,5 +49,7 @@ function getEorzeaTime() {
     return h + ':' + m;
     }
 
-       
+function reloadEleMiao(){
+    window.location.reload();
+}
 export default TimeTab;

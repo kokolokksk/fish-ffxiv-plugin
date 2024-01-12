@@ -21,7 +21,7 @@ const FishNeverEat = (prop: any | undefined)  => {
     
 
     return (
-            <div className='fish'>
+            <div className='fish' style={{resize:'both'}}>
                 <TimeTab />
                 <FishRiver />
                

@@ -52,7 +52,7 @@ class Input extends Component {
             ref={this.inputRef}
             type="text"
             placeholder="使用首字母搜索鱼名或钓场"
-            style={{ width: 300, height: 30, outline: 'none',imeMode: 'inactive',background: 'rgb(99,99,99)' }}
+            style={{ width: 300, height: 30, outline: 'none',imeMode: 'inactive',background: 'rgb(99,99,99)',borderRadius: '5px',border: 'none',color: 'white',paddingLeft: '10px' }}
             {...commonProps}
         />
     }

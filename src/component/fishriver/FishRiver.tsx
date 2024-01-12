@@ -72,11 +72,11 @@ const FishRiver = () => {
   
   
   useEffect(() => {
-    const anglelist = [];
-    const fishGameDataCN = getData();
-    for(const f in fishGameDataCN){
-      anglelist.push(fishGameDataCN[f]['anglerFishId']+'');
-    }
+    // const anglelist = [];
+    // const fishGameDataCN = getData();
+    // for(const f in fishGameDataCN){
+    //   anglelist.push(fishGameDataCN[f]['anglerFishId']+'');
+    // }
     // console.info(anglelist);
     // load from local data
     
@@ -210,10 +210,10 @@ const FishRiver = () => {
   //   return timeLength / 24;
   // };
   const calculateNewPosition = (): number => {
-    const hm = getEorzeaTime();
+    let hm = getEorzeaTime();
     // console.info(hm);
-    const initialPosition = Number(hm[0])*4+Number(hm[1])/15;
-    return initialPosition+4;
+    const initialPosition = Number(hm[0])*2+Number(hm[1])/30;
+    return initialPosition+5;
   }
 
   const addFish = (fish: any) => {
@@ -228,28 +228,28 @@ const FishRiver = () => {
 
   return (
     <>
-    <div>
       <div>
-      <div className="statusMsg" dangerouslySetInnerHTML={{__html:statusMsg}}></div>
-        <div className="searchTab">
-          <Input
-              type="text"
-              placeholder="使用首字母搜索鱼名"
-              value={searchTerm}
-              onChange={handleSearchChange}
-            />
-            
-        </div>
-            <div className="searchedArea">
-              {filteredFish.map(([key, fish]) => (
-                <div className="searchedFish" key={key} onClick={() => addFish(fish)}>
-                  <div className="fishName">{getChineseFishName(fish)}</div>
-                  </div>
-                  ))}
+        <div>
+            <div className="statusMsg" dangerouslySetInnerHTML={{__html:statusMsg}}></div>
+            <div className="searchTab">
+              <Input
+                  type="text"
+                  placeholder="使用首字母搜索鱼名"
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                />
+                
             </div>
-              
+            <div className="searchedArea">
+                {filteredFish.map(([key, fish]) => (
+                  <div className="searchedFish" key={key} onClick={() => addFish(fish)}>
+                    <div className="fishName">{getChineseFishName(fish)}</div>
+                  </div>
+                ))}
+            </div>
+                  
         </div>
-     </div>
+      </div>
       <div className="fishtable">
         <div className="time-tick"></div> {/* 时间刻度元素 */}
         {/* {fishes.map((item, index) => (
@@ -263,23 +263,23 @@ const FishRiver = () => {
          
           {Object.entries(plannedFish).map(([key, fish]) => (
             <div className="board-row balance" key={key}>
-              <Square timeChange={timeChange} value={getChineseFishName(fish)} onSquareDoubleClick={() => removeFish(plannedFish,fish)} onSquareClick={() => displayFishInfo(fish)} weather={getChineseFishName(fish)} fish={null} />
+              <Square fishDisplaySquare={true} timeChange={timeChange} value={getChineseFishName(fish)} onSquareDoubleClick={() => removeFish(plannedFish,fish)} onSquareClick={() => displayFishInfo(fish)} weather={getChineseFishName(fish)} fish={null} />
               {times.map((itemx, indexx) => (
-                <Square timeChange={timeChange} key={key+'_'+indexx} value={itemx} onSquareClick={() => handleClick(itemx,fish.locationsCN)} weather={getEzHoursWeather(itemx, fish.locationsCN)} fish={fish} preWeather={getPreWeather(itemx,fish.locationsCN)} />
+                <Square fishDisplaySquare={false} timeChange={timeChange} key={key+'_'+indexx} value={itemx} onSquareClick={() => handleClick(itemx,fish.locationsCN)} weather={getEzHoursWeather(itemx, fish.locationsCN)} fish={fish} preWeather={getPreWeather(itemx,fish.locationsCN)} />
               ))}
             </div>
           ))}
                
         <div
           className="long-line"
-          style={{left: `${initialPosition}%`, animation: `moveRight ${animationDuration}s linear infinite` }}
+          style={{left: `${initialPosition}rem`, animation: `moveRight ${animationDuration}s linear infinite` }}
         ></div>
       </div>
     </>
   );
 };
 
-function Square({ value, onSquareDoubleClick, onSquareClick, weather, fish, preWeather, timeChange }) {
+function Square({ value, onSquareDoubleClick, onSquareClick, weather, fish, preWeather, timeChange,fishDisplaySquare }) {
   const [timeOn, setTimeOn] = useState(false);
   const [fishable, setFishable] = useState(false);
   let rightPreWeather = false;
@@ -333,7 +333,7 @@ function Square({ value, onSquareDoubleClick, onSquareClick, weather, fish, preW
    
   }, [fish,timeChange]);
   return (
-    <button className={`square ${timeOn ? 'onTime' : 'notOnTime'} ${fishable ? 'onFishTime' :''}`} onClick={onSquareClick} onDoubleClick={onSquareDoubleClick} >
+    <button className={`square ${timeOn ? 'onTime' : 'notOnTime'} ${fishable ? 'onFishTime' :''} ${fishDisplaySquare ? 'fishSquare' : ''}`} onClick={onSquareClick} onDoubleClick={onSquareDoubleClick} >
       {weather}
     </button>
   );
